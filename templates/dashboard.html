@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Task Management</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>Task Management</h1>
+
+    <form method="POST">
+
+        <label>Employee ID</label>
+
+        <select id="employee" name="employee_id">
+
+            {% for employee in employees %}
+
+            <option
+                value="{{ employee.employee_id }}"
+                data-name="{{ employee.employee_name }}">
+
+                {{ employee.employee_id }}
+
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <label>Employee Name</label>
+
+        <input
+            type="text"
+            id="employee_name"
+            readonly>
+
+        <label>Task</label>
+
+        <select name="task_id">
+
+            {% for task in tasks %}
+
+            <option value="{{ task.task_id }}">
+                {{ task.task_title }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <label>Completed</label>
+
+        <select name="completed">
+
+            <option value="1">Completed</option>
+
+            <option value="0">Not Completed</option>
+
+        </select>
+
+        <button type="submit">
+            Submit
+        </button>
+
+    </form>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+</body>
+
+</html>

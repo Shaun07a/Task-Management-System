@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Manager Login</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <h1>Task Management System</h1>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST">
+
+        <label>Manager ID</label>
+
+        <input
+            type="number"
+            name="manager_id"
+            placeholder="Enter Manager ID"
+            required
+        >
+
+        <label>Password</label>
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Enter Password"
+            required
+     >
+
+        <button type="submit">Login</button>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>
