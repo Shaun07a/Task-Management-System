@@ -140,3 +140,51 @@ button:hover{
     margin-top:30px;
 
 }
+
+.success{
+
+    color:green;
+
+    text-align:center;
+
+    font-weight:bold;
+
+    margin-bottom:20px;
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    margin-top:30px;
+
+}
+
+table th{
+
+    background:#007BFF;
+
+    color:white;
+
+    padding:12px;
+
+}
+
+table td{
+
+    border:1px solid #ddd;
+
+    padding:10px;
+
+    text-align:center;
+
+}
+
+table tr:nth-child(even){
+
+    background:#f2f2f2;
+
+}

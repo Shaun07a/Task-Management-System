@@ -53,6 +53,8 @@ def dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    success = None
+
     # ---------- Save Assignment ----------
     if request.method == "POST":
 
@@ -74,6 +76,8 @@ def dashboard():
 
         conn.commit()
 
+        success = "Task assigned successfully!"
+
     # ---------- Employees ----------
     cursor.execute("""
         SELECT employee_id, employee_name
@@ -90,14 +94,38 @@ def dashboard():
     """)
     tasks = cursor.fetchall()
 
+    cursor.execute("""
+    SELECT
+        employee_tasks.assignment_id,
+        employees.employee_name,
+        tasks.task_title,
+        employee_tasks.completed,
+        employee_tasks.assigned_date
+
+    FROM employee_tasks
+
+    JOIN employees
+    ON employee_tasks.employee_id = employees.employee_id
+
+    JOIN tasks
+    ON employee_tasks.task_id = tasks.task_id
+
+    ORDER BY employee_tasks.assignment_id DESC
+    """)
+
+    assignments = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
     return render_template(
-        "dashboard.html",
-        employees=employees,
-        tasks=tasks
-    )
+    "dashboard.html",
+    employees=employees,
+    tasks=tasks,
+    assignments=assignments,
+    success=success
+)
+    
 
 if __name__ == "__main__":
     app.run(debug=True)
