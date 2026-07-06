@@ -14,7 +14,59 @@
 
 <div class="dashboard">
 
-    <h1>Task Management</h1>
+    <div class="header">
+
+        <h1>Task Management System</h1>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="success-message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <p>Manager Dashboard</p>
+
+    </div>
+
+        <div class="stats">
+
+        <div class="card">
+
+            <h2>{{ total_employees }}</h2>
+
+            <p>Employees</p>
+
+        </div>
+
+        <div class="card">
+
+            <h2>{{ total_tasks }}</h2>
+
+            <p>Tasks</p>
+
+        </div>
+
+        <div class="card">
+
+            <h2>{{ completed_tasks }}</h2>
+
+            <p>Completed</p>
+
+        </div>
+
+        <div class="card">
+
+            <h2>{{ pending_tasks }}</h2>
+
+            <p>Pending</p>
+
+        </div>
+
+    </div>
 
     {% if success %}
     <p class="success">{{ success }}</p>

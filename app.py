@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from database import get_db_connection
 
 app = Flask(__name__)
@@ -53,6 +53,30 @@ def dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # Total Employees
+    cursor.execute("SELECT COUNT(*) AS total FROM employees")
+    total_employees = cursor.fetchone()["total"]
+
+    # Total Tasks
+    cursor.execute("SELECT COUNT(*) AS total FROM tasks")
+    total_tasks = cursor.fetchone()["total"]
+
+    # Completed Tasks
+    cursor.execute("""
+    SELECT COUNT(*) AS total
+    FROM employee_tasks
+    WHERE completed = 1
+    """)
+    completed_tasks = cursor.fetchone()["total"]
+
+    # Pending Tasks
+    cursor.execute("""
+    SELECT COUNT(*) AS total
+    FROM employee_tasks
+    WHERE completed = 0
+    """)
+    pending_tasks = cursor.fetchone()["total"]
+
     success = None
 
     # ---------- Save Assignment ----------
@@ -68,13 +92,15 @@ def dashboard():
         VALUES (%s, %s, %s)
         """
 
-        cursor.execute(query, (
-            employee_id,
-            task_id,
-            completed
-        ))
-
+        cursor.execute(query, (employee_id, task_id, completed))
         conn.commit()
+
+        flash("Task assigned successfully!")
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for("dashboard"))
 
         success = "Task assigned successfully!"
 
@@ -123,7 +149,13 @@ def dashboard():
     employees=employees,
     tasks=tasks,
     assignments=assignments,
-    success=success
+    success=success,
+
+    total_employees=total_employees,
+    total_tasks=total_tasks,
+    completed_tasks=completed_tasks,
+    pending_tasks=pending_tasks
+
 )
     
 
