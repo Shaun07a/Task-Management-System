@@ -16,6 +16,12 @@
 
     <div class="header">
 
+        <div class="top-bar">
+            <a href="{{ url_for('logout') }}" class="logout-btn">
+                Logout
+            </a>
+        </div>
+
         <h1>Task Management System</h1>
 
         {% with messages = get_flashed_messages() %}

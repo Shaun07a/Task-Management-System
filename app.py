@@ -8,6 +8,8 @@ app.secret_key = "task_management_secret"
 @app.route("/", methods=["GET", "POST"])
 def login():
 
+    logout_success = session.pop("logout_success", False)
+
     if request.method == "POST":
 
         manager_id = request.form["manager_id"]
@@ -16,13 +18,12 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
-        query = """
-        SELECT * FROM manager
-        WHERE manager_code = %s
-        AND password = %s
-        """
-
-        cursor.execute(query, (manager_id, password))
+        cursor.execute("""
+            SELECT *
+            FROM manager
+            WHERE manager_code=%s
+            AND password=%s
+        """, (manager_id, password))
 
         manager = cursor.fetchone()
 
@@ -30,19 +31,23 @@ def login():
         conn.close()
 
         if manager:
-
             session["manager"] = manager["manager_code"]
-
             return redirect(url_for("dashboard"))
 
-        else:
+        return render_template(
+            "login.html",
+            error="Invalid Manager ID or Password",
+            logout_success=logout_success
+        )
 
-            return render_template(
-                "login.html",
-                error="Invalid Manager ID or Password"
-            )
+    # This executes ONLY for GET requests
+    return render_template(
+        "login.html",
+        logout_success=logout_success
+    )
 
-    return render_template("login.html")
+
+
 
 @app.route("/dashboard", methods=["GET", "POST"])
 def dashboard():
@@ -157,6 +162,14 @@ def dashboard():
     pending_tasks=pending_tasks
 
 )
+
+@app.route("/logout")
+def logout():
+
+    session.pop("manager", None)
+    session["logout_success"] = True
+
+    return redirect(url_for("login"))
     
 
 if __name__ == "__main__":
