@@ -24,12 +24,14 @@
 
         <h1>Task Management System</h1>
 
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for message in messages %}
-                    <div class="success-message">
+                {% for category, message in messages %}
+
+                    <div class="flash {{ category }}">
                         {{ message }}
                     </div>
+
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -151,6 +153,8 @@
 
         <th>Assigned Date</th>
 
+        <th>Action</th>
+
     </tr>
 
     {% for row in assignments %}
@@ -161,23 +165,33 @@
 
         <td>{{ row.task_title }}</td>
 
-        <td>
-
-            {% if row.completed == 1 %}
-
-                Completed
-
-            {% else %}
-
-                Pending
-
-            {% endif %}
-
-        </td>
+        <td>{{ row.status }}</td>
 
         <td>{{ row.assigned_date }}</td>
 
-    </tr>
+        <td>
+
+            {% if row.completed == 0 %}
+
+                <a href="{{ url_for('complete_task', assignment_id=row.assignment_id) }}"
+                class="complete-btn">
+                    Complete
+                </a>
+
+            {% else %}
+
+                ✓
+
+            {% endif %}
+
+            |
+
+            <a href="{{ url_for('delete_task', assignment_id=row.assignment_id) }}"
+            onclick="return confirm('Delete this task assignment?')">
+                Delete
+            </a>
+
+        </td>
 
     {% endfor %}
 

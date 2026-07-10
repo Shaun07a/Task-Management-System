@@ -91,16 +91,39 @@ def dashboard():
         task_id = request.form["task_id"]
         completed = request.form["completed"]
 
-        query = """
-        INSERT INTO employee_tasks
-        (employee_id, task_id, completed)
-        VALUES (%s, %s, %s)
-        """
+        cursor.execute("""
+        SELECT *
+        FROM employee_tasks
+        WHERE employee_id=%s
+        AND task_id=%s
+        AND completed=0
+        """, (employee_id, task_id))
 
-        cursor.execute(query, (employee_id, task_id, completed))
-        conn.commit()
+        existing = cursor.fetchone()
 
-        flash("Task assigned successfully!")
+        if existing:
+
+            flash(
+                "This task is already assigned to the employee!",
+                "error"
+            )
+
+        else:
+
+            cursor.execute("""
+            INSERT INTO employee_tasks
+            (employee_id, task_id, completed)
+            VALUES (%s, %s, %s)
+            """, (employee_id, task_id, completed))
+
+            conn.commit()
+
+            flash(
+                "Task assigned successfully!",
+                "success"
+            )
+
+       
 
         cursor.close()
         conn.close()
@@ -127,21 +150,21 @@ def dashboard():
 
     cursor.execute("""
     SELECT
-        employee_tasks.assignment_id,
-        employees.employee_name,
-        tasks.task_title,
-        employee_tasks.completed,
-        employee_tasks.assigned_date
-
-    FROM employee_tasks
-
-    JOIN employees
-    ON employee_tasks.employee_id = employees.employee_id
-
-    JOIN tasks
-    ON employee_tasks.task_id = tasks.task_id
-
-    ORDER BY employee_tasks.assignment_id DESC
+    et.assignment_id,
+    e.employee_name,
+    t.task_title,
+    et.completed,
+    CASE
+        WHEN et.completed = 1 THEN 'Completed'
+        ELSE 'Pending'
+    END AS status,
+    et.assigned_date
+    FROM employee_tasks et
+    JOIN employees e
+    ON et.employee_id = e.employee_id
+    JOIN tasks t
+    ON et.task_id = t.task_id
+    ORDER BY et.assigned_date DESC;
     """)
 
     assignments = cursor.fetchall()
@@ -162,6 +185,53 @@ def dashboard():
     pending_tasks=pending_tasks
 
 )
+
+@app.route("/delete/<int:assignment_id>")
+def delete_task(assignment_id):
+
+    if "manager" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        DELETE FROM employee_tasks
+        WHERE assignment_id=%s
+    """, (assignment_id,))
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    flash("Task deleted successfully!", "success")
+
+    return redirect(url_for("dashboard"))
+
+@app.route("/complete/<int:assignment_id>")
+def complete_task(assignment_id):
+
+    if "manager" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE employee_tasks
+        SET completed = 1
+        WHERE assignment_id = %s
+    """, (assignment_id,))
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    flash("Task marked as completed!", "success")
+
+    return redirect(url_for("dashboard"))
 
 @app.route("/logout")
 def logout():

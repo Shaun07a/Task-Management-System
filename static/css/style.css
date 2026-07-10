@@ -291,3 +291,35 @@ table tr:hover{
 .logout-btn:hover{
     background:#b52a37;
 }
+
+.flash{
+    padding:12px;
+    margin-bottom:20px;
+    border-radius:6px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.flash.success{
+    background:#d4edda;
+    color:#155724;
+}
+
+.flash.error{
+    background:#f8d7da;
+    color:#721c24;
+}
+
+.complete-btn{
+    background:#28a745;
+    color:white;
+    padding:5px 10px;
+    border-radius:5px;
+    text-decoration:none;
+    font-size:14px;
+    margin-right:8px;
+}
+
+.complete-btn:hover{
+    background:#218838;
+}
