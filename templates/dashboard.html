@@ -139,9 +139,20 @@
 
     <hr>
 
+    <div class="search-container">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by employee or task...">
+
+    </div>
+
 <h2>Assigned Tasks</h2>
 
-<table>
+<div class="table-container">
+
+<table id="assignmentTable">
 
     <tr>
 
@@ -165,31 +176,44 @@
 
         <td>{{ row.task_title }}</td>
 
-        <td>{{ row.status }}</td>
+        <td>
+
+            {% if row.status == "Completed" %}
+
+                <span class="status completed">
+                    Completed
+                </span>
+
+            {% else %}
+
+                <span class="status pending">
+                    Pending
+                </span>
+
+            {% endif %}
+
+        </td>
 
         <td>{{ row.assigned_date }}</td>
 
         <td>
 
             {% if row.completed == 0 %}
-
                 <a href="{{ url_for('complete_task', assignment_id=row.assignment_id) }}"
-                class="complete-btn">
+                class="btn complete-btn">
                     Complete
                 </a>
+                {% else %}
+                <span class="status completed">
+                    Completed
+                </span>
+                {% endif %}
 
-            {% else %}
-
-                ✓
-
-            {% endif %}
-
-            |
-
-            <a href="{{ url_for('delete_task', assignment_id=row.assignment_id) }}"
-            onclick="return confirm('Delete this task assignment?')">
-                Delete
-            </a>
+                <a href="{{ url_for('delete_task', assignment_id=row.assignment_id) }}"
+                class="btn delete-btn"
+                onclick="return confirm('Delete this task assignment?')">
+                    Delete
+                </a>
 
         </td>
 
