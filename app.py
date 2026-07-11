@@ -233,6 +233,101 @@ def complete_task(assignment_id):
 
     return redirect(url_for("dashboard"))
 
+@app.route("/edit/<int:assignment_id>", methods=["GET", "POST"])
+def edit_task(assignment_id):
+
+    if "manager" not in session:
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+    SELECT *
+    FROM employee_tasks
+    WHERE assignment_id = %s
+    """, (assignment_id,))
+
+    assignment = cursor.fetchone()
+
+    if not assignment:
+        flash("Task not found!", "error")
+        cursor.close()
+        conn.close()
+        return redirect(url_for("dashboard"))
+    
+    cursor.execute("""
+    SELECT employee_id, employee_name
+    FROM employees
+    ORDER BY employee_name
+    """)
+
+    employees = cursor.fetchall()
+
+    cursor.execute("""
+    SELECT task_id, task_title
+    FROM tasks
+    ORDER BY task_title
+    """)
+
+    tasks = cursor.fetchall()
+
+    if request.method == "POST":
+
+        employee_id = request.form["employee_id"]
+        task_id = request.form["task_id"]
+        completed = request.form["completed"]
+
+        cursor.execute("""
+        SELECT *
+        FROM employee_tasks
+        WHERE employee_id = %s
+        AND task_id = %s
+        AND assignment_id != %s
+        """, (employee_id, task_id, assignment_id))
+
+        duplicate = cursor.fetchone()
+
+        
+        if duplicate:
+
+            flash(
+                "This task is already assigned to the employee!",
+                "error"
+            )
+
+        else:
+
+            cursor.execute("""
+                UPDATE employee_tasks
+                SET employee_id=%s,
+                    task_id=%s,
+                    completed=%s
+                WHERE assignment_id=%s
+            """, (employee_id, task_id, completed, assignment_id))
+
+            conn.commit()
+
+            flash(
+                "Task updated successfully!",
+                "success"
+                )
+
+        cursor.close()
+        conn.close()
+
+        return redirect(url_for("dashboard"))
+
+    cursor.close()
+    conn.close()
+
+    return render_template(
+    "edit_task.html",
+    assignment=assignment,
+    employees=employees,
+    tasks=tasks
+)
+
 @app.route("/logout")
 def logout():
 

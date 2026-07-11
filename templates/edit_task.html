@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Edit Task Assignment</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <h1>Edit Task Assignment</h1>
+
+    <form method="POST">
+
+        <label>Employee</label>
+
+        <select name="employee_id">
+
+            {% for employee in employees %}
+
+            <option
+                value="{{ employee.employee_id }}"
+                {% if employee.employee_id == assignment.employee_id %}
+                    selected
+                {% endif %}
+            >
+                {{ employee.employee_name }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <label>Task</label>
+
+        <select name="task_id">
+
+            {% for task in tasks %}
+
+            <option
+                value="{{ task.task_id }}"
+                {% if task.task_id == assignment.task_id %}
+                    selected
+                {% endif %}
+            >
+                {{ task.task_title }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+        <label>Status</label>
+
+        <select name="completed">
+
+            <option value="0"
+                {% if assignment.completed == 0 %}
+                    selected
+                {% endif %}
+            >
+                Pending
+            </option>
+
+            <option value="1"
+                {% if assignment.completed == 1 %}
+                    selected
+                {% endif %}
+            >
+                Completed
+            </option>
+
+        </select>
+
+        <br><br>
+
+        <button type="submit">
+            Update Assignment
+        </button>
+
+        <a href="{{ url_for('dashboard') }}" class="btn delete-btn">
+            Cancel
+        </a>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>

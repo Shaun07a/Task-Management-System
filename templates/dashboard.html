@@ -197,24 +197,29 @@
         <td>{{ row.assigned_date }}</td>
 
         <td>
+            <a href="{{ url_for('edit_task', assignment_id=row.assignment_id) }}"
+                class="btn edit-btn">
+                Edit
+            </a>
 
-            {% if row.completed == 0 %}
+            <span class="separator">|</span>
+
+                {% if row.completed == 0 %}
                 <a href="{{ url_for('complete_task', assignment_id=row.assignment_id) }}"
                 class="btn complete-btn">
-                    Complete
+                Complete
                 </a>
                 {% else %}
-                <span class="status completed">
-                    Completed
-                </span>
+                <span class="btn complete-btn">Completed</span>
                 {% endif %}
+
+                <span class="separator">|</span>
 
                 <a href="{{ url_for('delete_task', assignment_id=row.assignment_id) }}"
                 class="btn delete-btn"
                 onclick="return confirm('Delete this task assignment?')">
-                    Delete
-                </a>
-
+                Delete
+            </a>
         </td>
 
     {% endfor %}
